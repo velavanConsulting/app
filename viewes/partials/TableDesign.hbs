@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Logistics Data</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Navigation Bars */
+
+    .navbar {
+      background-color: rebeccapurple;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .navbar-brand {
+      color: white;
+
+      font-weight: bold;
+
+    }
+
+    .search-wrapper {
+      background-color: #f3f3f4;
+      border-radius: 30px;
+      padding: 6px 15px;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 550px;
+      margin: 0 auto;
+    }
+
+    .search-wrapper input {
+      border: none;
+      outline: none;
+      background: transparent;
+      flex-grow: 1;
+      font-size: 15px;
+    }
+
+    .search-wrapper select {
+      border: none;
+      background: transparent;
+      outline: none;
+      margin-left: 10px;
+    }
+
+    .search-wrapper button {
+      background-color: #ea4c89;
+      border: none;
+      border-radius: 50%;
+      color: white;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+    }
+
+    .icon-group i {
+      font-size: 20px;
+      margin-left: 20px;
+      cursor: pointer;
+      color: #0d0c22;
+    }
+
+    @media (max-width: 991.98px) {
+      .navbar .row>div {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .icon-group {
+        justify-content: flex-end;
+      }
+
+      .search-wrapper {
+        margin: 0 auto;
+      }
+    }
+
+
+    /* Table */
+    body {
+      background-color: #f5f7fa;
+      /* Light grey background */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+
+
+    /* Filter Buttons Styling */
+    .filter-buttons-container .btn-outline-secondary {
+      border-color: #ced4da;
+      /* Light border */
+      color: #495057;
+      /* Dark text */
+      transition: all 0.2s ease-in-out;
+    }
+
+    .filter-buttons-container .btn-outline-secondary:hover {
+      background-color: #e9ecef;
+      border-color: #ced4da;
+      color: #343a40;
+    }
+
+    .filter-buttons-container .btn-outline-secondary.active {
+      background-color: #0d6efd;
+      /* Bootstrap primary blue */
+      border-color: #0d6efd;
+      color: white;
+    }
+
+    /* Table styling */
+    .custom-table thead th {
+      border-bottom: 1px solid #dee2e6;
+      /* Light border for header */
+      border-right: 1px solid #e9ecef;
+      /* Vertical separator for header cells */
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      font-weight: 600;
+      white-space: nowrap;
+      /* Prevent wrapping for headers */
+      background-color: white;
+      /* Ensure header background is white */
+    }
+
+    /* Remove border-right from the very last header cell */
+    .custom-table thead th:last-child {
+      border-right: none;
+    }
+
+    .custom-table tbody tr {
+      transition: background-color 0.2s ease;
+    }
+
+    .custom-table tbody tr:hover {
+      background-color: #f8f9fa;
+      /* Lighter hover effect */
+    }
+
+    .custom-table tbody td {
+      vertical-align: middle;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      white-space: nowrap;
+      /* Keep content on one line to prevent unexpected wrapping */
+      border-right: 1px solid #e9ecef;
+      /* Vertical separator for data cells */
+    }
+
+    /* Remove border-right from the very last data cell in each row */
+    .custom-table tbody td:last-child {
+      border-right: none;
+    }
+
+    /* Specific styling for selected table rows */
+    .table-row-selected {
+      background-color: #e0f2f7 !important;
+      /* Light blue for selected rows */
+    }
+
+
+    /* Checkbox alignment */
+    .form-check-input {
+      vertical-align: middle;
+    }
+
+    /* Ellipsis button styling */
+    .btn.p-0.border-0 {
+      line-height: 1;
+      /* Adjust line height for better icon centering */
+    }
+
+    /* Bottom action bar buttons */
+    .btn-light.text-secondary {
+      background-color: #f8f9fa;
+      border-color: #e9ecef;
+      color: #6c757d !important;
+    }
+
+    .btn-light.text-secondary:hover {
+      background-color: #e2e6ea;
+      border-color: #dae0e5;
+    }
+
+    /* Dropdown styling for table row ellipsis */
+    .dropdown-menu {
+      border-radius: 0.25rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+
+    /* Smooth Transition for Columns */
+    .custom-table th,
+    .custom-table td {
+      /* Transition for opacity and visibility for smooth fade */
+      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, padding 0.3s ease-in-out, width 0.3s ease-in-out;
+      /* Ensure no minimum width to allow collapse */
+      min-width: 0;
+    }
+
+    .custom-table th.hidden-col,
+    .custom-table td.hidden-col {
+      opacity: 0;
+      /* visibility: hidden;  */
+      display: none;
+      width: 0;
+      /* Collapse width to 0 */
+      padding-left: 0;
+      padding-right: 0;
+      border-right: none;
+      /* Hide the vertical border for hidden columns */
+    }
+
+
+    /* Responsive */
+    @media (max-width: 528px) {
+      .hide-below-528px {
+        display: none !important;
+        /* Use !important if you need to override Bootstrap defaults */
+      }
+    }
+
+    .navbar {
+      padding: 0px;
+    }
+
+    .navbar-brand {
+      padding: 0px !important;
+    }
+
+    .brand-logo {
+      height: 60px;
+      max-height: 100%;
+      vertical-align: middle;
+    }
+
+
+
+
+    @media (max-width: 1110px) {
+      .brand-text {
+        display: none;
+      }
+    }
+
+
+    .navbar .fas,
+    .navbar .fa-solid {
+      color: white !important;
+    }
+
+    .table-responsive {
+      padding-bottom: 100px;
+    }
+
+    label {
+      color: #360097 !important;
+    }
+
+    .navbar .fa-solid,
+    .navbar .fas {
+      font-size: 20px !important;
+      transition: 0.2s;
+    }
+
+    .navbar .fa-solid,
+    .navbar .fas:hover {
+      font-size: 28px !important;
+      transition: 0.2s;
+      color: #97a7be !important;
+    }
+
+
+
+
+    /* Modal */
+
+    .border-violet {
+      border-color: #7c3aed !important;
+    }
+
+    .form-check-input:checked {
+      background-color: #7c3aed !important;
+      border-color: #7c3aed !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar py-lg-3">
+    <div class="container-fluid">
+      <div class="row w-100 align-items-center gx-3">
+
+        <!-- Brand (Logo) -->
+        <div class="col-6 col-lg-2 order-1">
+          <a class="navbar-brand d-flex align-items-center" href="#">
+            <img class="brand-logo" src="/img/brand-logo.png" alt="Logo">
+            <span class="brand-text ms-2">Velavan Consulting</span>
+          </a>
+        </div>
+
+        <!-- Search -->
+        <div class="col-12 col-lg-8 order-3 order-lg-2 mt-2 mt-lg-0">
+          <form action="/auth/search" method="POST">
+            <div class="search-wrapper mx-lg-auto">
+              <input type="text" name="search_query" value="{{s}}" placeholder="What are you looking for?" required>
+              <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Icons -->
+        <div class="col-6 col-lg-2 d-flex justify-content-end order-2 order-lg-3">
+          <div class="icon-group d-flex align-items-center">
+            <a href="/home"><i class="fas fa-home"></i></a>
+            <a href="/print"><i class="fas fa-print"></i></a>
+            <a href="/notification"><i class="fas fa-bell"></i></a>
+            <a href="/admin#set"><i class="fas fa-cog"></i></a>
+            <a href="/admin"><i class="fas fa-user-circle"></i></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+
+  <!--Table Section Start-->
+  <div class="mt-4 container-fluid">
+    <div class="d-flex justify-content-start mb-3 filter-buttons-container">
+      <button class="btn btn-outline-secondary me-2 active" data-filter="all">All</button>
+      <button class="btn btn-outline-secondary me-2" data-filter="fc">FC</button>
+      <button class="btn btn-outline-secondary me-2" data-filter="client">Client</button>
+      <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addModal">
+        <i class="fas fa-plus me-2"></i>Add
+      </button>
+    </div>
+
+    <form action="auth/delete" method="post">
+      <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover mb-0 custom-table">
+          <thead>
+            <tr>
+              <th scope="col" class="text-secondary text-uppercase small col-checkbox">
+                <input type="checkbox" value="{{this.id}}" class="form-check-input mt-0" id="selectAllCheckbox">
+              </th>
+              <th scope="col" class="text-secondary text-uppercase small col-id">ID</th>
+              <th scope="col" class="text-secondary text-uppercase small col-client-name">Company</th>
+              <th scope="col" class="text-secondary text-uppercase small col-client-name">Owner Name</th>
+              <th scope="col" class="text-secondary text-uppercase small col-phone">Phone</th>
+              <th scope="col" class="text-secondary text-uppercase small col-vehicle-number">Vehicle Number</th>
+              <th scope="col" class="text-secondary text-uppercase small col-vehicle-type">Vehicle Type</th>
+              <th scope="col" class="text-secondary text-uppercase small col-fc-expiry-date">FC Expiry Date</th>
+              <th scope="col" class="text-secondary text-uppercase small col-np">Np Date</th>
+              <th scope="col" class="text-secondary text-uppercase small col-permit">Permit Date</th>
+              <th scope="col" class="text-secondary text-uppercase small col-notes">Notes</th>
+              <th scope="col" class="text-secondary text-uppercase small col-created-at">Created At</th>
+              <th scope="col" class="text-secondary text-uppercase small col-modified-at">Modified At</th>
+              <th scope="col" class="text-secondary text-uppercase small text-end col-actions">Edit</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+            {{#each clients}}
+            <tr>
+              <td class="col-checkbox">
+
+                <input type="checkbox" name="vehicle_ids" value="{{this.vehicle_number}}" class="form-check-input mt-0">
+              </td>
+              <td class="col-id">{{add @index 1}}</td>
+              <td class="col-company">{{this.company}}</td>
+              <td class="col-client-name">{{this.client_name}}</td>
+              <td class="col-phone">{{this.phone}}</td>
+
+              <td class="col-vehicle-number">{{this.vehicle_number}}</td>
+              <td class="col-vehicle-type"><span
+                  class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill">{{this.vehicle_type}}</span>
+              </td>
+
+
+              <td class="col-fc-expiry-date">{{this.fc_expiry_date}}</td>
+              <td class="col-np">{{this.np}}</td>
+              <td class="col-permit">{{this.permit}}</td>
+              <td class="col-notes">{{this.notes}}</td>
+              <td class="col-created-at">{{this.created_at}}</td>
+              <td class="col-modified-at">{{this.modified_at}}</td>
+              <!-- EDIT ICON in your table -->
+              <td class="text-center col-actions">
+                <i class="fas fa-edit" style="cursor: pointer;" data-bs-toggle="modal"
+                  data-bs-target="#editModal{{this.id}}"></i>
+              </td>
+
+            </tr>
+
+
+            {{/each}}
+
+          </tbody>
+        </table>
+      </div>
+
+      {{#if message}}
+      <div class="no-data mt-5" align="center">
+        {{message}}
+      </div>
+
+      {{/if}}
+
+
+      <div
+        class="container-fluid fixed-bottom d-flex justify-content-between align-items-center mt-3 p-3 bg-white  shadow-sm">
+        <div>
+          <span class="badge bg-success-subtle text-success me-2" id="selectedVehiclesCount">1</span>
+          <span class="text-muted" id="selectedVehiclesText">vehicles selected</span>
+        </div>
+        <div class="d-flex align-items-left">
+          {{!-- <button type="button" class="btn btn-light btn-sm text-success me-2 mb-2">
+            <i class="fa-solid fa-print me-1"></i> <span class="hide-below-528px">Print</span>
+          </button>
+          <button type="button" class="btn btn-light btn-sm text-info me-2 mb-2">
+            <i class="fas fa-plus me-1"></i><span class="hide-below-528px"> Add Notes</span>
+          </button> --}}
+          <button type="submit" class="btn btn-light btn-sm text-danger me-2 mb-2"
+            onclick="return confirm('Are you sure you want to delete selected clients?')">
+            <i class="fas fa-times me-1"></i> <span>Delete</span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+
+
+
+
+  <!-- Add Modal -->
+  <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content border-0 shadow-lg">
+        <form id="addForm" action="/auth/add" method="post">
+          <div class="modal-header text-white p-4" style="background: #6f42c1;">
+            <h5 class="modal-title fs-4" id="addModalLabel">Add Vehicle Information</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body row g-4 p-4">
+            <div class="col-lg-6 col-md-12 border-end pe-lg-4">
+              <h6 class="pb-2 mb-3 fs-5 text-indigo border-bottom" style="color:#6f42c1;">Client Info</h6>
+
+              <div class="mb-3">
+                <label for="client_name" class="form-label fw-semibold">Owner Name <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="client_name" id="client_name" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="phone" class="form-label fw-semibold">Phone <span class="text-danger">*</span></label>
+                <input type="text" name="phone" id="phone" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="company" class="form-label fw-semibold">Company <span class="text-danger">*</span></label>
+                <input type="text" name="company" id="company" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="vehicle_number" class="form-label fw-semibold">Vehicle Number <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="vehicle_number" id="vehicle_number" class="form-control" required>
+              </div>
+
+              <div class="mb-0">
+                <label for="vehicle_type" class="form-label fw-semibold">Vehicle Type <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="vehicle_type" id="vehicle_type" class="form-control" required>
+              </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12 ps-lg-4">
+              <h6 class="pb-2 mb-3 fs-5 text-indigo border-bottom" style="color:#6f42c1;">FC & Permit Details</h6>
+
+              <div class="mb-3">
+                <label for="fc_expiry_date" class="form-label fw-semibold">FC Expiry Date <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="fc_expiry_date" id="fc_expiry_date" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="np" class="form-label fw-semibold">NP Date <span class="text-danger">*</span></label>
+                <input type="date" name="np" id="np" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="permit" class="form-label fw-semibold">Permit Date <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="permit" id="permit" class="form-control" required>
+              </div>
+
+              <div class="mb-0">
+                <label for="notes" class="form-label fw-semibold">Notes</label>
+                <textarea name="notes" id="notes" class="form-control" rows="3"
+                  placeholder="Enter additional information here"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer p-3 bg-light border-top">
+            <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm px-4">Add Vehicle</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+
+  {{#each clients}}
+
+  <div class="modal fade" id="editModal{{this.id}}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content border-0 shadow-lg">
+
+        <form id="editForm{{this.id}}" action="/auth/edit" method="POST">
+
+          <input type="hidden" name="id" id="id{{this.id}}" value="{{this.id}}">
+
+          <div class="modal-header text-white p-4" style="background: #6f42c1">
+            <h5 class="modal-title fs-4" id="editModalLabel">Edit Vehicle Information</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body row g-4 p-4">
+            <div class="col-lg-6 col-md-12 border-end pe-lg-4">
+              <h6 class="pb-2 mb-3 fs-5 text-indigo border-bottom" style="color:#6f42c1;">Client Info</h6>
+
+              <div class="mb-3">
+                <label for="client_name{{this.id}}" class="form-label fw-semibold">Owner Name <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="client_name" value="{{this.client_name}}" id="client_name{{this.id}}"
+                  class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="phone{{this.id}}" class="form-label fw-semibold">Phone <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="phone" value="{{this.phone}}" id="phone{{this.id}}" class="form-control"
+                  required>
+              </div>
+
+              <div class="mb-3">
+                <label for="company{{this.id}}" class="form-label fw-semibold">Company <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="company" value="{{this.company}}" id="company{{this.id}}" class="form-control"
+                  required>
+              </div>
+
+              <div class="mb-3">
+                <label for="vehicle_number{{this.id}}" class="form-label fw-semibold">Vehicle Number <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="vehicle_number" value="{{this.vehicle_number}}" id="vehicle_number{{this.id}}"
+                  class="form-control" readonly>
+              </div>
+
+              <div class="mb-0">
+                <label for="vehicle_type{{this.id}}" class="form-label fw-semibold">Vehicle Type <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="vehicle_type" value="{{this.vehicle_type}}" id="vehicle_type{{this.id}}"
+                  class="form-control" required>
+              </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12 ps-lg-4">
+              <h6 class="pb-2 mb-3 fs-5 text-indigo border-bottom" style="color:#6f42c1;">FC & Permit Details</h6>
+
+              <div class="mb-3">
+                <label for="fc_expiry_date{{this.id}}" class="form-label fw-semibold">FC Expiry Date <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="fc_expiry_date" value="{{this.fc_expiry_date_input}}"
+                  id="fc_expiry_date{{this.id}}" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="np{{this.id}}" class="form-label fw-semibold">NP Date <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="np" value="{{this.np_input}}" id="np{{this.id}}" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="permit{{this.id}}" class="form-label fw-semibold">Permit Date <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="permit" value="{{this.permit_input}}" id="permit{{this.id}}"
+                  class="form-control" required>
+              </div>
+
+              <div class="mb-0">
+                <label for="notes{{this.id}}" class="form-label fw-semibold">Notes</label>
+                <textarea name="notes" id="notes{{this.id}}" class="form-control" rows="3">{{this.notes}}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer p-3 bg-light border-top">
+            <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm px-4">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {{/each}}
+
+
+
+  <!--important-->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const filterButtons = document.querySelectorAll('.filter-buttons-container .btn');
+      const table = document.querySelector('.custom-table');
+
+      // Get elements for the count display
+      const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+      const selectedVehiclesCountSpan = document.getElementById('selectedVehiclesCount');
+      const selectedVehiclesTextSpan = document.getElementById('selectedVehiclesText');
+      // Get all individual checkboxes in the table body
+      const individualCheckboxes = document.querySelectorAll('tbody .col-checkbox input[type="checkbox"]');
+
+
+      // Function to update the selected count
+      function updateSelectedCount() {
+
+
+        let checkedCount = 0;
+        individualCheckboxes.forEach(checkbox => {
+          if (checkbox.checked) {
+            checkedCount++;
+          }
+        });
+
+        selectedVehiclesCountSpan.textContent = checkedCount;
+        selectedVehiclesTextSpan.textContent = checkedCount === 1 ? 'vehicle selected' : 'vehicles selected';
+
+        // Update the state of the "Select All" checkbox
+        if (checkedCount === individualCheckboxes.length && individualCheckboxes.length > 0) {
+          selectAllCheckbox.checked = true;
+          selectAllCheckbox.indeterminate = false;
+        } else if (checkedCount > 0) {
+          selectAllCheckbox.checked = false;
+          selectAllCheckbox.indeterminate = true;
+        } else {
+          selectAllCheckbox.checked = false;
+          selectAllCheckbox.indeterminate = false;
+        }
+
+        // Also update the row styling (remove if not desired)
+        individualCheckboxes.forEach(checkbox => {
+          if (checkbox.checked) {
+            checkbox.closest('tr').classList.add('table-row-selected');
+          } else {
+            checkbox.closest('tr').classList.remove('table-row-selected');
+          }
+        });
+      }
+
+
+      // Event listener for the "Select All" checkbox
+      if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function () {
+          const isChecked = this.checked;
+          individualCheckboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+          });
+          updateSelectedCount(); // Update the count after changing all checkboxes
+        });
+      }
+
+      // Event listeners for individual checkboxes
+      individualCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+      });
+
+
+      // Define which columns to show for each filter
+      const columnDefinitions = {
+        all: [
+          'col-checkbox', 'col-id', 'col-client-name', 'col-phone', 'col-vehicle-number',
+          'col-vehicle-type', 'col-fc-expiry-date', 'col-permit', 'col-np',
+          'col-company', 'col-notes', 'col-created-at', 'col-modified-at', 'col-actions'
+        ],
+        fc: [
+          'col-checkbox', 'col-id', 'col-company', 'col-client-name', 'col-phone', 'col-vehicle-number',
+          'col-np', 'col-vehicle-type', 'col-fc-expiry-date', 'col-notes',
+          'col-permit', 'col-created-at', 'col-modified-at',
+          'col-actions'
+        ],
+        client: [
+          'col-checkbox', 'col-id', 'col-client-name', 'col-company', 'col-phone',
+          'col-vehicle-number', 'col-vehicle-type', 'col-notes', 'col-created-at',
+          'col-modified-at', 'col-actions'
+        ]
+      };
+
+      function showTableColumns(filterType) {
+        const columnsToShow = columnDefinitions[filterType];
+
+        // Iterate through all header cells (<th>)
+        table.querySelectorAll('th').forEach(th => {
+          // Check if the th has a class that is in our columnDefinitions (e.g., col-id, col-client-name)
+          const isColumnInFilter = Array.from(th.classList).some(cls => columnsToShow.includes(cls));
+
+          if (isColumnInFilter) {
+            th.classList.remove('hidden-col');
+          } else {
+            th.classList.add('hidden-col');
+          }
+        });
+
+        // Iterate through all data cells (<td>) in each row
+        table.querySelectorAll('tbody tr').forEach(row => {
+          row.querySelectorAll('td').forEach(td => {
+            const isColumnInFilter = Array.from(td.classList).some(cls => columnsToShow.includes(cls));
+            if (isColumnInFilter) {
+              td.classList.remove('hidden-col');
+            } else {
+              td.classList.add('hidden-col');
+            }
+          });
+        });
+      }
+
+      // Add event listeners to filter buttons
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          // Remove 'active' class from all buttons
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          // Add 'active' class to the clicked button
+          this.classList.add('active');
+
+          const filterType = this.dataset.filter;
+          showTableColumns(filterType);
+        });
+      });
+
+      // Initial display on page load (show all columns by default)
+      showTableColumns('all');
+      updateSelectedCount(); // Call initially to set the correct count based on pre-selected rows
+    });
+
+
+
+
+  </script>
+
+
+
+  {{!-- Alert Message --}}
+  {{#if alert}}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const alertType = "{{alert}}";
+      if (alertType === "exists") {
+        alert("Vehicle Number already exists.");
+      } else if (alertType === "success") {
+        alert("Client data added successfully.");
+      } else if (alertType === "updated") {
+        alert("Client data updated successfully.");
+      } else if (alertType === "deleted") {
+        alert("Selected clients deleted successfully.");
+      } else if (alertType === "nodata") {
+        alert("No clients selected to delete.");
+      }
+      else if (alertType === "error") {
+        alert("Something went wrong try again");
+      }
+    });
+
+    // After alert shown
+    if (window.location.search.includes("alert")) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  </script>
+  {{/if}}
+
+
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {{>head}}
+  <title>Notifications</title>
+  <style>
+    #notificationList {
+      padding: 20px;
+    }
+
+    .alert {
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+      border-left: 5px solid rebeccapurple;
+      background-color: #fffdfc;
+    }
+
+    .alert .btn-whatsapp {
+      white-space: nowrap;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 576px) {
+      .notification-wrapper {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .info-line .col {
+      padding-right: 2rem;
+    }
+
+    .info-line i {
+      color: rebeccapurple;
+      margin-right: 5px;
+    }
+
+    .text-danger {
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+
+  {{>nav}}
+
+  <!-- Notification Page Content -->
+  {{!-- <div id="notificationList" class="container">
+    {{#each notifications}}
+    <div class="alert alert-warning d-flex align-items-start gap-3 mt-3 flex-column flex-sm-row">
+      <i class="fas fa-exclamation-triangle mt-1 text-danger"></i>
+      <div class="notification-wrapper w-100">
+
+        <div class="notification-content">
+          <strong><i class="fas fa-building"></i> {{company}}</strong><br>
+          <div class="row info-line mt-1">
+            <div class="col-12 col-lg-auto mb-1">
+              <i class="fas fa-car"></i><strong> Vehicle:</strong> {{vehicle_number}}
+            </div>
+            <div class="col-12 col-lg-auto mb-1">
+              <i class="fas fa-user"></i><strong> Owner:</strong> {{client_name}}
+            </div>
+            <div class="col-12 col-lg-auto mb-1">
+              <i class="fas fa-phone"></i><strong> Phone:</strong> {{phone}}
+            </div>
+          </div>
+
+          <div class="mt-1">
+            <i class="fas fa-calendar-day text-muted"></i>
+            <small class="text-muted">Expiry Date:</small>
+            <span class="text-danger">{{expiry_date}}</span>
+            <br>
+            <span class="text-danger">{{message}}</span>
+          </div>
+        </div>
+
+        <div class="mt-3 mt-sm-0 text-sm-end">
+          <a href="/send-whatsapp?name={{client_name}}&phone={{phone}}&vehicle={{vehicle_number}}&company={{company}}&type={{type}}&date={{expiry_date}}"
+            target="_blank" class="btn btn-lg btn-whatsapp">
+            <i class="fab fa-whatsapp fa-lg" style="font-size: 30px;color:green"></i>
+          </a>
+        </div>
+
+      </div>
+    </div>
+    {{/each}}
+  </div> --}}
+
+  {{#if notifications.length}}
+  {{#each notifications}}
+  <div class="alert alert-warning d-flex align-items-start gap-3 mt-3 flex-column flex-sm-row container">
+    <i class="fa-solid fa-bell text-danger"></i>
+    <div class="notification-wrapper w-100">
+
+      <div class="notification-content">
+        <strong><i class="fas fa-building"></i> {{company}}</strong><br>
+        <div class="row info-line mt-1">
+          <div class="col-12 col-lg-auto mb-1">
+            <i class="fas fa-car"></i><strong> Vehicle:</strong> {{vehicle_number}}
+          </div>
+          <div class="col-12 col-lg-auto mb-1">
+            <i class="fas fa-user"></i><strong> Owner:</strong> {{client_name}}
+          </div>
+          <div class="col-12 col-lg-auto mb-1">
+            <i class="fas fa-phone"></i><strong> Phone:</strong> {{phone}}
+          </div>
+        </div>
+
+        <div class="mt-1">
+          <i class="fas fa-calendar-day text-muted"></i>
+          <small class="text-muted">Expiry Date:</small>
+          <span class="text-danger">{{expiry_date}}</span>
+          <br>
+          <span class="text-danger">{{message}}</span>
+        </div>
+      </div>
+
+      <div class="mt-3 mt-sm-0 text-sm-end">
+        <a href="/send-whatsapp?name={{client_name}}&phone={{phone}}&vehicle={{vehicle_number}}&company={{company}}&type={{type}}&date={{expiry_date}}"
+          target="_blank" class="btn btn-lg btn-whatsapp">
+          <i class="fab fa-whatsapp fa-lg" style="font-size: 30px;color:green"></i>
+        </a>
+      </div>
+
+    </div>
+  </div>
+  {{/each}}
+  {{else}}
+  <div class="alert alert-info mt-5  p-5 text-center container">
+    <i class="fas fa-bell-slash"></i> No notifications available.
+  </div>
+  {{/if}}
+
+
+</body>
+
+</html>

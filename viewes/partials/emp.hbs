@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {{>head}}
+  <title>Employee Dashboard</title>
+
+  <style>
+    .emp-card {
+      max-width: 400px;
+      margin: 80px auto;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .emp-card .card-body {
+      padding: 30px;
+    }
+
+    .logout-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .logout-btn:hover {
+      background-color: #c82333;
+    }
+
+    .bg {
+      background-color: rgb(104, 89, 104);
+    }
+  </style>
+</head>
+
+<body>
+  {{>nav}}
+
+  <div class="container">
+    <div class="card emp-card">
+      <div class="card-header text-center bg text-white">
+        <h4>Employee Profile</h4>
+      </div>
+      <div class="card-body">
+        <p><strong>Name:</strong> {{employee.name}}</p>
+        <p><strong>Email:</strong> {{employee.email}}</p>
+
+        <div class="text-center mt-4">
+          <a href="/logout" class="btn logout-btn px-4">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

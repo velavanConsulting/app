@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {{>head}}
+
+  <title>Print Client Report</title>
+
+  <style>
+    :root {
+      --form-control-color: rebeccapurple;
+      --form-control-disabled: #959495;
+    }
+
+    body {
+      background-color: #f9f7fc;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .custom-card {
+      background-color: #f1e6ff;
+      border-radius: 12px;
+      padding: 25px;
+      margin-top: 30px;
+    }
+
+    .custom-checkbox-label {
+      font-weight: bold;
+      font-size: 1rem;
+      display: grid;
+      grid-template-columns: 1.2em auto;
+      gap: 0.5em;
+      margin-bottom: 1em;
+      align-items: center;
+    }
+
+    input[type="checkbox"] {
+      appearance: none;
+      background-color: white;
+      margin: 0;
+      font: inherit;
+      color: var(--form-control-color);
+      width: 1.2em;
+      height: 1.2em;
+      border: 2px solid var(--form-control-color);
+      border-radius: 0.15em;
+      display: grid;
+      place-content: center;
+      transition: border-color 0.2s ease-in-out;
+    }
+
+    input[type="checkbox"]::before {
+      content: "";
+      width: 0.6em;
+      height: 0.6em;
+      transform: scale(0);
+      transition: transform 120ms ease-in-out;
+      background-color: var(--form-control-color);
+      clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    }
+
+    input[type="checkbox"]:checked::before {
+      transform: scale(1);
+    }
+
+    input[type="checkbox"]:focus {
+      outline: none;
+      border-color: black;
+    }
+
+    input[type="checkbox"]:disabled {
+      border-color: var(--form-control-disabled);
+      background-color: #eee;
+      cursor: not-allowed;
+    }
+
+    input[type="checkbox"]:hover {
+      border-color: darkviolet;
+    }
+
+    .btn-violet {
+      background-color: rebeccapurple;
+      color: white;
+      border: none;
+    }
+
+    .btn-violet:hover {
+      background-color: indigo;
+    }
+  </style>
+</head>
+
+<body>
+  {{>nav}}
+
+
+  <!-- Print Client Report Page -->
+  <form action="/auth/generate-report" method="POST" target="_blank">
+    <!-- Page Content -->
+    <div class="container">
+      <div class="custom-card">
+        <h4 class="mb-4 text-center text-uppercase text-dark fw-bold">
+          <i class="fas fa-file-alt me-2 text-violet"></i>Print Client Report
+        </h4>
+
+        <!-- Date Range Inputs -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">From Date:</label>
+            <input type="date" class="form-control" name="from_date" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold">To Date:</label>
+            <input type="date" class="form-control" name="to_date" required>
+          </div>
+        </div>
+
+        <!-- Checkboxes -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">Select Columns to Print:</label>
+          <div class="row">
+            <div class="col-md-4 col-sm-6">
+              <label class="custom-checkbox-label">
+                <input type="checkbox" name="columns" value="client_name" checked />
+                Client Name
+              </label>
+              <label class="custom-checkbox-label">
+                <input type="checkbox" name="columns" value="phone" checked />
+                Phone
+              </label>
+              <label class="custom-checkbox-label">
+                <input type="checkbox" name="columns" value="company" />
+                Company
+              </label>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <label class="custom-checkbox-label">
+                <input type="checkbox" name="columns" value="vehicle_number" checked />
+                Vehicle Number
+              </label>
+              <label class="custom-checkbox-label">
+                <input type="checkbox" name="columns" value="vehicle_type" />
+                Vehicle Type
+              </label>
+              <label class="custom-checkbox-label">
+                <input type="checkbox" name="columns" value="fc_expiry_date" />
+                FC Expiry Date
+              </label>
+            </div>
+
+            <div class="col-md-4 col-sm-12">
+              <label class="custom-checkbox-label">
+                <input type="checkbox" name="columns" value="np" />
+                NP Date
+              </label>
+              <label class="custom-checkbox-label">
+                <input type="checkbox" name="columns" value="permit" />
+                Permit Date
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Print Button -->
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-violet px-4 py-2">
+            <i class="fas fa-print me-2"></i>Generate Report
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+</body>
+
+</html>
