@@ -133,7 +133,14 @@ exports.search = (req, res) => {
       np: formatDate(client.np),
       permit: formatDate(client.permit),
       created_at: formatDateTime(client.created_at),
-      modified_at: formatDateTime(client.modified_at)
+      modified_at: formatDateTime(client.modified_at),
+
+         // yyyy-mm-dd for <input type="date">
+        fc_expiry_date_input: formatYMD(client.fc_expiry_date),
+        np_input: formatYMD(client.np),
+        permit_input: formatYMD(client.permit)
+
+      
     }));
 
     res.render('TableDesign', {
@@ -828,5 +835,6 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
