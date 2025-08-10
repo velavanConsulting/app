@@ -362,6 +362,7 @@
               <th scope="col" class="text-secondary text-uppercase small col-fc-expiry-date">FC Expiry Date</th>
               <th scope="col" class="text-secondary text-uppercase small col-np">Np Date</th>
               <th scope="col" class="text-secondary text-uppercase small col-permit">Permit Date</th>
+              <th scope="col" class="text-secondary text-uppercase small col-road-tax">Road Tax</th>
               <th scope="col" class="text-secondary text-uppercase small col-notes">Notes</th>
               <th scope="col" class="text-secondary text-uppercase small col-created-at">Created At</th>
               <th scope="col" class="text-secondary text-uppercase small col-modified-at">Modified At</th>
@@ -391,6 +392,9 @@
               <td class="col-fc-expiry-date">{{this.fc_expiry_date}}</td>
               <td class="col-np">{{this.np}}</td>
               <td class="col-permit">{{this.permit}}</td>
+              
+              <td class="col-road-tax">{{this.road_tax}}</td>
+              
               <td class="col-notes">{{this.notes}}</td>
               <td class="col-created-at">{{this.created_at}}</td>
               <td class="col-modified-at">{{this.modified_at}}</td>
@@ -507,6 +511,12 @@
                 <input type="date" name="permit" id="permit" class="form-control" required>
               </div>
 
+              <div class="mb-3">
+                <label for="road_tax" class="form-label fw-semibold">Road Tax <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="road_tax" id="road_tax" class="form-control" required>
+              </div>
+
               <div class="mb-0">
                 <label for="notes" class="form-label fw-semibold">Notes</label>
                 <textarea name="notes" id="notes" class="form-control" rows="3"
@@ -604,6 +614,13 @@
                   class="form-control" required>
               </div>
 
+              <div class="mb-3">
+                <label for="road_tax{{this.id}}" class="form-label fw-semibold">Road Tax <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="road_tax" value="{{this.road_tax_input}}"  id="road_tax{{this.id}}" 
+                class="form-control" required>
+              </div>
+
               <div class="mb-0">
                 <label for="notes{{this.id}}" class="form-label fw-semibold">Notes</label>
                 <textarea name="notes" id="notes{{this.id}}" class="form-control" rows="3">{{this.notes}}</textarea>
@@ -697,7 +714,7 @@
         all: [
           'col-checkbox', 'col-id', 'col-client-name', 'col-phone', 'col-vehicle-number',
           'col-vehicle-type', 'col-fc-expiry-date', 'col-permit', 'col-np',
-          'col-company', 'col-notes', 'col-created-at', 'col-modified-at', 'col-actions'
+          'col-company', 'col-notes', 'col-created-at', 'col-modified-at', 'col-actions','col-road-tax'
         ],
         fc: [
           'col-checkbox', 'col-id', 'col-company', 'col-client-name', 'col-phone', 'col-vehicle-number',
@@ -804,4 +821,5 @@
 
 
 </html>
+
 
