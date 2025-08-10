@@ -62,7 +62,12 @@ exports.table = (req, res) => {
     }
 
     if (result.length === 0) {
-      return res.status(404).send("Data not found");
+      // return res.status(404).send("Data not found");
+      return res.render("TableDesign", {
+        clients: [],
+        message: `Data not found`,
+        s: "No Data"
+      });
     }
 
     // Format dates
@@ -72,13 +77,15 @@ exports.table = (req, res) => {
         fc_expiry_date: formatDate(client.fc_expiry_date),
         np: formatDate(client.np),
         permit: formatDate(client.permit),
+        road_tax: formatDate(client.road_tax),
         created_at: formatDateTime(client.created_at),
         modified_at: formatDateTime(client.modified_at),
 
         // yyyy-mm-dd for <input type="date">
         fc_expiry_date_input: formatYMD(client.fc_expiry_date),
         np_input: formatYMD(client.np),
-        permit_input: formatYMD(client.permit)
+        permit_input: formatYMD(client.permit),
+	      road_tax_input: formatYMD(client.road_tax)
       };
     });
 
@@ -132,13 +139,15 @@ exports.search = (req, res) => {
       fc_expiry_date: formatDate(client.fc_expiry_date),
       np: formatDate(client.np),
       permit: formatDate(client.permit),
+      road_tax: formatDate(client.road_tax),
       created_at: formatDateTime(client.created_at),
       modified_at: formatDateTime(client.modified_at),
 
          // yyyy-mm-dd for <input type="date">
         fc_expiry_date_input: formatYMD(client.fc_expiry_date),
         np_input: formatYMD(client.np),
-        permit_input: formatYMD(client.permit)
+        permit_input: formatYMD(client.permit),
+	      road_tax_input: formatYMD(client.road_tax)
 
       
     }));
@@ -401,6 +410,7 @@ exports.addClient = (req, res) => {
     fc_expiry_date,
     np,
     permit,
+    road_tax,
     notes
   } = req.body;
 
@@ -417,8 +427,8 @@ exports.addClient = (req, res) => {
 
     const insertQuery = `
       INSERT INTO clients 
-      (client_name, phone, company, vehicle_number, vehicle_type, fc_expiry_date, np, permit, notes)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (client_name, phone, company, vehicle_number, vehicle_type, fc_expiry_date, np, permit, road_tax, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const values = [
       client_name,
@@ -429,6 +439,7 @@ exports.addClient = (req, res) => {
       fc_expiry_date,
       np,
       permit,
+      road_tax,
       notes
     ];
 
@@ -454,6 +465,7 @@ exports.editClient = (req, res) => {
     fc_expiry_date,
     np,
     permit,
+    road_tax,
     notes
   } = req.body;
 
@@ -461,7 +473,7 @@ exports.editClient = (req, res) => {
   const updateQuery = `
     UPDATE clients
     SET client_name = ?, phone = ?, company = ?, vehicle_type = ?,
-        fc_expiry_date = ?, np = ?, permit = ?, notes = ?, modified_at = NOW()
+        fc_expiry_date = ?, np = ?, permit = ?, road_tax = ?, notes = ?, modified_at = NOW()
     WHERE id = ?
   `;
 
@@ -473,6 +485,7 @@ exports.editClient = (req, res) => {
     fc_expiry_date,
     np,
     permit,
+    road_tax,
     notes,
     id
   ];
@@ -814,10 +827,14 @@ exports.backup = async (req, res) => {
 
 // Format date to dd/mm/yyyy
 function formatDate(date) {
+  if(date==null)  
+      return date
   return new Date(date).toLocaleDateString('en-GB'); // dd/mm/yyyy
 };
 // Formate date to yyyy/mm/dd
 function formatYMD(date) {
+  if(date==null)  
+      return date
   const d = new Date(date);
   const month = `${d.getMonth() + 1}`.padStart(2, '0');
   const day = `${d.getDate()}`.padStart(2, '0');
@@ -826,6 +843,9 @@ function formatYMD(date) {
 };
 // Format date + time to dd/mm/yyyy hh:mm AM/PM
 function formatDateTime(date) {
+  if(date==null)  
+      return date
+  
   return new Date(date).toLocaleString('en-GB', {
     day: '2-digit',
     month: '2-digit',
@@ -835,6 +855,7 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
 
