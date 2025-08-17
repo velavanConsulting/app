@@ -324,8 +324,12 @@ exports.gr = (req, res) => {
 };
 
 exports.loadNotifications = (req, res) => {
-  const today = moment().startOf('day');
-  const targetDate = today.clone().add(7, 'days').format('YYYY-MM-DD');
+  const today = moment().startOf('day').format('YYYY-MM-DD');
+
+  // Individual thresholds
+  const fcThreshold = moment().add(7, 'days').format('YYYY-MM-DD');
+  const permitThreshold = moment().add(30, 'days').format('YYYY-MM-DD');
+  const npThreshold = moment().add(5, 'days').format('YYYY-MM-DD');
 
   const query = `
     SELECT client_name, phone, company, vehicle_number, 
@@ -333,62 +337,77 @@ exports.loadNotifications = (req, res) => {
            DATE_FORMAT(np, '%Y-%m-%d') as np_expiry_date,
            DATE_FORMAT(permit, '%Y-%m-%d') as permit_expiry_date
     FROM clients
-    WHERE fc_expiry_date = ?
-       OR np = ?
-       OR permit = ?
+    WHERE (fc_expiry_date BETWEEN ? AND ? OR fc_expiry_date < ?)
+       OR (np BETWEEN ? AND ? OR np < ?)
+       OR (permit BETWEEN ? AND ? OR permit < ?)
   `;
 
-  db.query(query, [targetDate, targetDate, targetDate], (err, results) => {
-    if (err) {
-      console.error('Notification Fetch Error:', err);
-      return res.status(500).json({ error: 'Server error while fetching notifications.' });
+  db.query(
+    query,
+    [
+      today, fcThreshold, today, // FC
+      today, npThreshold, today, // NP
+      today, permitThreshold, today // Permit
+    ],
+    (err, results) => {
+      if (err) {
+        console.error('Notification Fetch Error:', err);
+        return res.status(500).json({ error: 'Server error while fetching notifications.' });
+      }
+
+      const notifications = results.flatMap(client => {
+        const list = [];
+
+        const checkAndPush = (type, expiry, thresholdDays) => {
+          if (!expiry) return;
+
+          const expiryMoment = moment(expiry, 'YYYY-MM-DD');
+          const daysLeft = expiryMoment.diff(moment(), 'days');
+
+          if (daysLeft <= thresholdDays) {
+            let statusText = '';
+            let statusClass = '';
+
+            if (daysLeft < 0) {
+              statusText = 'Expired!';
+              statusClass = 'text-danger fw-bold';
+            } else if (daysLeft === 0) {
+              statusText = 'Expires Today!';
+              statusClass = 'text-warning fw-bold';
+            } else {
+              statusText = `Expires in ${daysLeft} day${daysLeft > 1 ? 's' : ''}`;
+              statusClass = 'text-primary fw-bold';
+            }
+
+            list.push({
+              type,
+              expiry_date: formatDate(expiry),
+              days_left: daysLeft,
+              status_text: statusText,
+              status_class: statusClass,
+              client_name: client.client_name,
+              phone: client.phone,
+              vehicle_number: client.vehicle_number,
+              company: client.company
+            });
+          }
+        };
+
+        checkAndPush('FC', client.fc_expiry_date, 7);
+        checkAndPush('NP', client.np_expiry_date, 5);
+        checkAndPush('Permit', client.permit_expiry_date, 30);
+
+        return list;
+      });
+
+      // Sort soonest first (expired first, then nearest expiry)
+      notifications.sort((a, b) => a.days_left - b.days_left);
+
+      res.render('notification', { notifications });
     }
-
-    const notifications = results.flatMap(client => {
-      const notifications = [];
-
-      if (client.fc_expiry_date === targetDate) {
-        notifications.push({
-          type: 'FC',
-          expiry_date: client.fc_expiry_date,
-          message: `FC for Vehicle ${client.vehicle_number} is expiring in 7 days!`,
-          client_name: client.client_name,
-          phone: client.phone,
-          vehicle_number: client.vehicle_number,
-          company: client.company
-        });
-      }
-
-      if (client.np_expiry_date === targetDate) {
-        notifications.push({
-          type: 'NP',
-          expiry_date: client.np_expiry_date,
-          message: `NP for Vehicle ${client.vehicle_number} is expiring in 7 days!`,
-          client_name: client.client_name,
-          phone: client.phone,
-          vehicle_number: client.vehicle_number,
-          company: client.company
-        });
-      }
-
-      if (client.permit_expiry_date === targetDate) {
-        notifications.push({
-          type: 'Permit',
-          expiry_date: client.permit_expiry_date,
-          message: `Permit for Vehicle ${client.vehicle_number} is expiring in 7 days!`,
-          client_name: client.client_name,
-          phone: client.phone,
-          vehicle_number: client.vehicle_number,
-          company: client.company
-        });
-      }
-
-      return notifications;
-    });
-
-    res.render('notification', { notifications }); // your handlebars page
-  });
+  );
 };
+
 
 exports.sendWhatsAppNotification = (req, res) => {
   const { name, phone, vehicle, company, type, date } = req.query;
@@ -855,6 +874,7 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
 
