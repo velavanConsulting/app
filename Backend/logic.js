@@ -78,6 +78,7 @@ exports.table = (req, res) => {
         np: formatDate(client.np),
         permit: formatDate(client.permit),
         road_tax: formatDate(client.road_tax),
+		road_tax_amt : road_tax_amount,
         created_at: formatDateTime(client.created_at),
         modified_at: formatDateTime(client.modified_at),
 
@@ -140,14 +141,15 @@ exports.search = (req, res) => {
       np: formatDate(client.np),
       permit: formatDate(client.permit),
       road_tax: formatDate(client.road_tax),
-      created_at: formatDateTime(client.created_at),
+      road_tax_amt : road_tax_amount,
+	  created_at: formatDateTime(client.created_at),
       modified_at: formatDateTime(client.modified_at),
 
-         // yyyy-mm-dd for <input type="date">
-        fc_expiry_date_input: formatYMD(client.fc_expiry_date),
-        np_input: formatYMD(client.np),
-        permit_input: formatYMD(client.permit),
-	      road_tax_input: formatYMD(client.road_tax)
+      // yyyy-mm-dd for <input type="date">
+      fc_expiry_date_input: formatYMD(client.fc_expiry_date),
+      np_input: formatYMD(client.np),
+      permit_input: formatYMD(client.permit),
+	  road_tax_input: formatYMD(client.road_tax)
 
       
     }));
@@ -431,6 +433,7 @@ exports.addClient = (req, res) => {
     np,
     permit,
     road_tax,
+	road_tax_amt,
     notes
   } = req.body;
 
@@ -447,8 +450,8 @@ exports.addClient = (req, res) => {
 
     const insertQuery = `
       INSERT INTO clients 
-      (client_name, phone, company, vehicle_number, vehicle_type, fc_expiry_date, np, permit, road_tax, notes)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (client_name, phone, company, vehicle_number, vehicle_type, fc_expiry_date, np, permit, road_tax, road_tax_amount, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const values = [
       client_name,
@@ -460,6 +463,7 @@ exports.addClient = (req, res) => {
       np,
       permit,
       road_tax,
+	  road_tax_amt,
       notes
     ];
 
@@ -486,6 +490,7 @@ exports.editClient = (req, res) => {
     np,
     permit,
     road_tax,
+	road_tax_amt,
     notes
   } = req.body;
 
@@ -493,7 +498,7 @@ exports.editClient = (req, res) => {
   const updateQuery = `
     UPDATE clients
     SET client_name = ?, phone = ?, company = ?, vehicle_type = ?,
-        fc_expiry_date = ?, np = ?, permit = ?, road_tax = ?, notes = ?, modified_at = NOW()
+    fc_expiry_date = ?, np = ?, permit = ?, road_tax = ?, road_tax_amount= ?, notes = ?, modified_at = NOW()
     WHERE id = ?
   `;
 
@@ -506,6 +511,7 @@ exports.editClient = (req, res) => {
     np,
     permit,
     road_tax,
+	road_tax_amt,
     notes,
     id
   ];
@@ -875,6 +881,7 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
 
