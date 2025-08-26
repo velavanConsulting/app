@@ -363,6 +363,7 @@
               <th scope="col" class="text-secondary text-uppercase small col-np">Np Date</th>
               <th scope="col" class="text-secondary text-uppercase small col-permit">Permit Date</th>
               <th scope="col" class="text-secondary text-uppercase small col-road-tax">Road Tax</th>
+               <th scope="col" class="text-secondary text-uppercase small col-road-tax">Tax Amount</th>
               <th scope="col" class="text-secondary text-uppercase small col-notes">Notes</th>
               <th scope="col" class="text-secondary text-uppercase small col-created-at">Created At</th>
               <th scope="col" class="text-secondary text-uppercase small col-modified-at">Modified At</th>
@@ -394,6 +395,7 @@
               <td class="col-permit">{{this.permit}}</td>
               
               <td class="col-road-tax">{{this.road_tax}}</td>
+              <td class="col-road-tax-amt">{{this.road_tax_amt}}</td>
               
               <td class="col-notes">{{this.notes}}</td>
               <td class="col-created-at">{{this.created_at}}</td>
@@ -517,6 +519,12 @@
                 <input type="date" name="road_tax" id="road_tax" class="form-control" required>
               </div>
 
+              <div class="mb-3">
+                <label for="road_tax_amt" class="form-label fw-semibold">Tax Amount<span
+                    class="text-danger">*</span></label>
+                <input type="date" name="road_tax_amt" id="road_tax_amt" class="form-control" required>
+              </div>
+
               <div class="mb-0">
                 <label for="notes" class="form-label fw-semibold">Notes</label>
                 <textarea name="notes" id="notes" class="form-control" rows="3"
@@ -618,6 +626,13 @@
                 <label for="road_tax{{this.id}}" class="form-label fw-semibold">Road Tax <span
                     class="text-danger">*</span></label>
                 <input type="date" name="road_tax" value="{{this.road_tax_input}}"  id="road_tax{{this.id}}" 
+                class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="road_tax_amt{{this.id}}" class="form-label fw-semibold">Tax Amount<span
+                    class="text-danger">*</span></label>
+                <input type="date" name="road_tax_amt" value="{{this.road_tax_amt}}"  id="road_tax_amt{{this.id}}" 
                 class="form-control" required>
               </div>
 
@@ -821,5 +836,6 @@
 
 
 </html>
+
 
 
