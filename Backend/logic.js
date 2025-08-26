@@ -78,7 +78,7 @@ exports.table = (req, res) => {
         np: formatDate(client.np),
         permit: formatDate(client.permit),
         road_tax: formatDate(client.road_tax),
-		road_tax_amt : road_tax_amount,
+		road_tax_amt : client.road_tax_amount,
         created_at: formatDateTime(client.created_at),
         modified_at: formatDateTime(client.modified_at),
 
@@ -141,7 +141,7 @@ exports.search = (req, res) => {
       np: formatDate(client.np),
       permit: formatDate(client.permit),
       road_tax: formatDate(client.road_tax),
-      road_tax_amt : road_tax_amount,
+      road_tax_amt : client.road_tax_amount,
 	  created_at: formatDateTime(client.created_at),
       modified_at: formatDateTime(client.modified_at),
 
@@ -881,6 +881,7 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
 
