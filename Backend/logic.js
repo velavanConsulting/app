@@ -580,6 +580,7 @@ exports.deleteClient = (req, res) => {
   });
 };
 
+
 exports.admin = (req, res) => {
   const adminId = req.session.adminId;
 
@@ -592,6 +593,7 @@ exports.admin = (req, res) => {
   const modifiedQuery = `SELECT COUNT(*) AS modified FROM clients WHERE DATE(modified_at) = CURDATE()`;
   const allClientsQuery = `SELECT * FROM employee`;
   const adminInfoQuery = `SELECT name, email FROM admin WHERE id = ?`;
+  const limitsQuery = `SELECT attribute, value FROM system_settings WHERE  attribute IN ('np','fc','permit')`;
 
   db.query(totalQuery, (err, totalResult) => {
     if (err) return res.status(500).send("Total query error");
@@ -610,19 +612,32 @@ exports.admin = (req, res) => {
               return res.status(500).send("Admin info query error");
             }
 
-            const stats = {
-              totalClients: totalResult[0].total,
-              newYesterday: yResult[0].yesterday,
-              modifiedToday: mResult[0].modified,
-            };
+            db.query(limitsQuery, (err, limitsResult) => {
+              if (err) {
+                return res.status(500).send("Limits query error");
+              }
 
-            const admin = adminInfoResult[0];
+              // Convert result to object { np: val, fc: val, permit: val }
+              const limits = {};
+              limitsResult.forEach(row => {
+                limits[row.attribute] = row.value;
+              });
 
-            res.render('admin', {
-              stats,
-              emp: employeeResult,
-              adminName: admin.name,
-              adminEmail: admin.email
+              const stats = {
+                totalClients: totalResult[0].total,
+                newYesterday: yResult[0].yesterday,
+                modifiedToday: mResult[0].modified,
+              };
+
+              const admin = adminInfoResult[0];
+
+              res.render('admin', {
+                stats,
+                emp: employeeResult,
+                adminName: admin.name,
+                adminEmail: admin.email,
+                limits // pass np, fc, permit to frontend
+              });
             });
           });
         });
@@ -1020,6 +1035,7 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
 
