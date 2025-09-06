@@ -201,7 +201,7 @@
         </button>
       </form>
 
-       <!-- Notification Section -->
+      <!-- Notification Section -->
 <h6 class="mt-4"></h6><i class="fas fa-bell me-2 mt-3"></i>Notification Limit</h6>
 
 <form action="/auth/limit" method="post" class="row g-3 mt-2">
@@ -214,7 +214,7 @@
       id="np_limit" 
       name="np_limit" 
       value="{{limits.np}}" 
-     
+      placeholder="Days (e.g. 5)" 
       required>
   </div>
 
@@ -226,7 +226,7 @@
       id="fc_limit" 
       name="fc_limit" 
       value="{{limits.fc}}" 
-      
+      placeholder="Days (e.g. 7)" 
       required>
   </div>
 
@@ -238,7 +238,7 @@
       id="permit_limit" 
       name="permit_limit" 
       value="{{limits.permit}}" 
-     
+      placeholder="Days (e.g. 30)" 
       required>
   </div>
 
@@ -248,6 +248,8 @@
     </button>
   </div>
 </form>
+
+
 
 
 
@@ -357,4 +359,5 @@
 
 
 </html>
+
 
