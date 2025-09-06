@@ -416,7 +416,7 @@ exports.sendWhatsAppNotification = (req, res) => {
 
   //const message = `Hello ${name},\n\nThis is a reminder that your vehicle ${vehicle} (${type}) is expiring on ${date}. Please renew it on time.\n\nThank you!\n- ${company}`;
   //const message = `வணக்கம் ${name},\n\nஉங்கள் வாகனம் ${vehicle} (${type}) ${date} அன்று காலாவதி ஆகிறது. தயவுசெய்து அதை நேரத்திற்கு முன்னே புதுப்பிக்கவும்.\n\nநன்றி!\n- ${company}`;
-  const message = `*ஸ்ரீ வேலவன் ஆட்டோ கன்சல்டிங்* \n\nவணக்கம் *${name}*,\n\nஉங்கள் வாகனம் *${vehicle}* (${type}) ${date} அன்று காலாவதி ஆகிறது. தயவுசெய்து அதை நேரத்திற்கு முன்னே புதுப்பிக்கவும்.\n\nநன்றி!`;
+  const message = `*ஸ்ரீ வேலவன் ஆட்டோ கன்சல்டிங்* \n\nவணக்கம் *${name}*,\n\nஉங்கள் வாகனம் *${vehicle} (${type}) ${date}* அன்று காலாவதி ஆகிறது. தயவுசெய்து அதை நேரத்திற்கு முன்னே புதுப்பிக்கவும்.\n\nநன்றி!`;
 	const whatsappLink = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
 
   res.redirect(whatsappLink);
@@ -881,6 +881,7 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
 
