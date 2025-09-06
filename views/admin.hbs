@@ -201,6 +201,54 @@
         </button>
       </form>
 
+       <!-- Notification Section -->
+<h6 class="mt-4"></h6><i class="fas fa-bell me-2 mt-3"></i>Notification Limit</h6>
+
+<form action="/auth/limit" method="post" class="row g-3 mt-2">
+
+  <div class="col-md-4">
+    <label for="np_limit" class="form-label text-muted">NP</label>
+    <input 
+      type="number" 
+      class="form-control" 
+      id="np_limit" 
+      name="np_limit" 
+      value="{{limits.np}}" 
+      placeholder="Days (e.g. 5)" 
+      required>
+  </div>
+
+  <div class="col-md-4">
+    <label for="fc_limit" class="form-label text-muted">FC</label>
+    <input 
+      type="number" 
+      class="form-control" 
+      id="fc_limit" 
+      name="fc_limit" 
+      value="{{limits.fc}}" 
+      placeholder="Days (e.g. 7)" 
+      required>
+  </div>
+
+  <div class="col-md-4">
+    <label for="permit_limit" class="form-label text-muted">Permit</label>
+    <input 
+      type="number" 
+      class="form-control" 
+      id="permit_limit" 
+      name="permit_limit" 
+      value="{{limits.permit}}" 
+      placeholder="Days (e.g. 30)" 
+      required>
+  </div>
+
+  <div class="col-12">
+    <button type="submit" class="btn btn-gray btn-outline-secondary mt-3">
+      <i class="fas fa-save me-1"></i> Save Limits
+    </button>
+  </div>
+</form>
+
 
 
       <!-- Account Security -->
@@ -306,5 +354,6 @@
 
 
 </body>
+
 
 </html>
