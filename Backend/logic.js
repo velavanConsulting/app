@@ -325,6 +325,7 @@ exports.gr = (req, res) => {
   });
 };
 
+
 exports.loadNotifications = (req, res) => {
   const today = moment().startOf('day').format('YYYY-MM-DD');
 
@@ -1019,6 +1020,7 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
 
