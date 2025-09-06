@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  {{>head}}
+{{>head}}
   <title>Notifications</title>
   <style>
+
     #notificationList {
       padding: 20px;
     }
@@ -55,7 +55,9 @@
 
   {{>nav}}
 
-  {{#if notifications.length}}
+
+
+{{#if notifications.length}}
   {{#each notifications}}
     <div class="alert alert-warning d-flex align-items-start gap-3 mt-3 flex-column flex-sm-row container">
       <i class="fa-solid fa-bell text-danger"></i>
@@ -86,11 +88,15 @@
         </div>
 
         <div class="mt-3 mt-sm-0 text-sm-end">
-          <a href="/send-whatsapp?name={{client_name}}&phone={{phone}}&vehicle={{vehicle_number}}&company={{company}}&type={{type}}&date={{expiry_date}}"
+           <a href="/send-whatsapp?name={{client_name}}&phone={{phone}}&vehicle={{vehicle_number}}&company={{company}}&type={{type}}&date={{expiry_date}}"
              target="_blank"
              class="btn btn-lg btn-whatsapp">
             <i class="fab fa-whatsapp fa-lg" style="font-size: 30px; color: green;"></i>
           </a>
+           <i class="fas fa-edit mt-2" style="cursor: pointer; font-size:25px; color: rgb(0, 162, 255);" data-bs-toggle="modal"
+                  data-bs-target="#editModal{{this.id}}">
+            </i>
+          
         </div>
 
       </div>
@@ -103,7 +109,118 @@
 {{/if}}
 
 
+
+  {{#each notifications}}
+
+  <div class="modal fade" id="editModal{{this.id}}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content border-0 shadow-lg">
+
+        <form id="editForm{{this.id}}" action="/auth/edit" method="POST">
+
+          <input type="hidden" name="id" id="id{{this.id}}" value="{{this.id}}">
+
+          <div class="modal-header text-white p-4" style="background: #6f42c1">
+            <h5 class="modal-title fs-4" id="editModalLabel">Edit Vehicle Information</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body row g-4 p-4">
+            <div class="col-lg-6 col-md-12 border-end pe-lg-4">
+              <h6 class="pb-2 mb-3 fs-5 text-indigo border-bottom" style="color:#6f42c1;">Client Info</h6>
+
+              <div class="mb-3">
+                <label for="client_name{{this.id}}" class="form-label fw-semibold">Owner Name <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="client_name" value="{{this.client_name}}" id="client_name{{this.id}}"
+                  class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="phone{{this.id}}" class="form-label fw-semibold">Phone <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="phone" value="{{this.phone}}" id="phone{{this.id}}" class="form-control"
+                  required>
+              </div>
+
+              <div class="mb-3">
+                <label for="company{{this.id}}" class="form-label fw-semibold">Company <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="company" value="{{this.company}}" id="company{{this.id}}" class="form-control"
+                  required>
+              </div>
+
+              <div class="mb-3">
+                <label for="vehicle_number{{this.id}}" class="form-label fw-semibold">Vehicle Number <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="vehicle_number" value="{{this.vehicle_number}}" id="vehicle_number{{this.id}}"
+                  class="form-control" readonly>
+              </div>
+
+              <div class="mb-0">
+                <label for="vehicle_type{{this.id}}" class="form-label fw-semibold">Vehicle Type <span
+                    class="text-danger">*</span></label>
+                <input type="text" name="vehicle_type" value="{{this.vehicle_type}}" id="vehicle_type{{this.id}}"
+                  class="form-control" required>
+              </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12 ps-lg-4">
+              <h6 class="pb-2 mb-3 fs-5 text-indigo border-bottom" style="color:#6f42c1;">FC & Permit Details</h6>
+
+              <div class="mb-3">
+                <label for="fc_expiry_date{{this.id}}" class="form-label fw-semibold">FC Expiry Date <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="fc_expiry_date" value="{{this.fc_expiry_date_input}}"
+                  id="fc_expiry_date{{this.id}}" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="np{{this.id}}" class="form-label fw-semibold">NP Date <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="np" value="{{this.np_input}}" id="np{{this.id}}" class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="permit{{this.id}}" class="form-label fw-semibold">Permit Date <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="permit" value="{{this.permit_input}}" id="permit{{this.id}}"
+                  class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="road_tax{{this.id}}" class="form-label fw-semibold">Road Tax <span
+                    class="text-danger">*</span></label>
+                <input type="date" name="road_tax" value="{{this.road_tax_input}}"  id="road_tax{{this.id}}" 
+                class="form-control" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="road_tax_amt{{this.id}}" class="form-label fw-semibold">Tax Amount<span
+                    class="text-danger">*</span></label>
+                <input type="number" name="road_tax_amt" value="{{this.road_tax_amt}}" id="road_tax_amt{{this.id}}" class="form-control" required>
+              </div>
+
+              <div class="mb-0">
+                <label for="notes{{this.id}}" class="form-label fw-semibold">Notes</label>
+                <textarea name="notes" id="notes{{this.id}}" class="form-control" rows="3">{{this.notes}}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer p-3 bg-light border-top">
+            <button type="button" class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm px-4">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {{/each}}
+
+
+
+
 </body>
-
-
 </html>
