@@ -328,86 +328,117 @@ exports.gr = (req, res) => {
 exports.loadNotifications = (req, res) => {
   const today = moment().startOf('day').format('YYYY-MM-DD');
 
-  // Individual thresholds
-  const fcThreshold = moment().add(7, 'days').format('YYYY-MM-DD');
-  const permitThreshold = moment().add(30, 'days').format('YYYY-MM-DD');
-  const npThreshold = moment().add(5, 'days').format('YYYY-MM-DD');
+  // 🔹 First get thresholds (np, fc, permit) from DB
+  const limitsQuery = `SELECT attribute, value FROM system_settings WHERE attribute IN ('np','fc','permit')`;
 
-  const query = `
-    SELECT client_name, phone, company, vehicle_number, 
-           DATE_FORMAT(fc_expiry_date, '%Y-%m-%d') as fc_expiry_date,
-           DATE_FORMAT(np, '%Y-%m-%d') as np_expiry_date,
-           DATE_FORMAT(permit, '%Y-%m-%d') as permit_expiry_date
-    FROM clients
-    WHERE (fc_expiry_date BETWEEN ? AND ? OR fc_expiry_date < ?)
-       OR (np BETWEEN ? AND ? OR np < ?)
-       OR (permit BETWEEN ? AND ? OR permit < ?)
-  `;
-
-  db.query(
-    query,
-    [
-      today, fcThreshold, today, // FC
-      today, npThreshold, today, // NP
-      today, permitThreshold, today // Permit
-    ],
-    (err, results) => {
-      if (err) {
-        console.error('Notification Fetch Error:', err);
-        return res.status(500).json({ error: 'Server error while fetching notifications.' });
-      }
-
-      const notifications = results.flatMap(client => {
-        const list = [];
-
-        const checkAndPush = (type, expiry, thresholdDays) => {
-          if (!expiry) return;
-
-          const expiryMoment = moment(expiry, 'YYYY-MM-DD');
-          const daysLeft = expiryMoment.diff(moment(), 'days');
-
-          if (daysLeft <= thresholdDays) {
-            let statusText = '';
-            let statusClass = '';
-
-            if (daysLeft < 0) {
-              statusText = 'Expired!';
-              statusClass = 'text-danger fw-bold';
-            } else if (daysLeft === 0) {
-              statusText = 'Expires Today!';
-              statusClass = 'text-warning fw-bold';
-            } else {
-              statusText = `Expires in ${daysLeft} day${daysLeft > 1 ? 's' : ''}`;
-              statusClass = 'text-primary fw-bold';
-            }
-
-            list.push({
-              type,
-              expiry_date: formatDate(expiry),
-              days_left: daysLeft,
-              status_text: statusText,
-              status_class: statusClass,
-              client_name: client.client_name,
-              phone: client.phone,
-              vehicle_number: client.vehicle_number,
-              company: client.company
-            });
-          }
-        };
-
-        checkAndPush('FC', client.fc_expiry_date, 7);
-        checkAndPush('NP', client.np_expiry_date, 5);
-        checkAndPush('Permit', client.permit_expiry_date, 30);
-
-        return list;
-      });
-
-      // Sort soonest first (expired first, then nearest expiry)
-      notifications.sort((a, b) => a.days_left - b.days_left);
-
-      res.render('notification', { notifications });
+  db.query(limitsQuery, (err, limitsResult) => {
+    if (err) {
+      console.error("Limits Fetch Error:", err);
+      return res.status(500).json({ error: "Server error while fetching limits." });
     }
-  );
+
+    // Convert result → { np: 10, fc: 7, permit: 30 }
+    const limits = {};
+    limitsResult.forEach(row => {
+      limits[row.attribute] = parseInt(row.value, 10); // ensure number
+    });
+
+    // Thresholds based on DB values
+    const fcThreshold = moment().add(limits.fc, 'days').format('YYYY-MM-DD');
+    const npThreshold = moment().add(limits.np, 'days').format('YYYY-MM-DD');
+    const permitThreshold = moment().add(limits.permit, 'days').format('YYYY-MM-DD');
+
+    const query = `
+      SELECT * FROM clients
+      WHERE (fc_expiry_date BETWEEN ? AND ? OR fc_expiry_date < ?)
+         OR (np BETWEEN ? AND ? OR np < ?)
+         OR (permit BETWEEN ? AND ? OR permit < ?)
+    `;
+
+    db.query(
+      query,
+      [
+        today, fcThreshold, today, // FC
+        today, npThreshold, today, // NP
+        today, permitThreshold, today // Permit
+      ],
+      (err, results) => {
+        if (err) {
+          console.error('Notification Fetch Error:', err);
+          return res.status(500).json({ error: 'Server error while fetching notifications.' });
+        }
+
+        // 🔹 Format all details just like in your table code
+        const formattedClients = results.map(client => {
+          return {
+            ...client,
+            fc_expiry_date: formatDate(client.fc_expiry_date),
+            np: formatDate(client.np),
+            permit: formatDate(client.permit),
+            road_tax: formatDate(client.road_tax),
+            road_tax_amt: client.road_tax_amount,
+            created_at: formatDateTime(client.created_at),
+            modified_at: formatDateTime(client.modified_at),
+
+            // yyyy-mm-dd for <input type="date">
+            fc_expiry_date_input: formatYMD(client.fc_expiry_date),
+            np_input: formatYMD(client.np),
+            permit_input: formatYMD(client.permit),
+            road_tax_input: formatYMD(client.road_tax)
+          };
+        });
+
+        // 🔹 Now build notifications from formattedClients
+        const notifications = formattedClients.flatMap(client => {
+          const list = [];
+
+          const checkAndPush = (type, expiry, thresholdDays) => {
+            if (!expiry) return;
+
+            const expiryMoment = moment(expiry, 'YYYY-MM-DD');
+            const daysLeft = expiryMoment.diff(moment(), 'days');
+
+            if (daysLeft <= thresholdDays) {
+              let statusText = '';
+              let statusClass = '';
+
+              if (daysLeft < 0) {
+                statusText = 'Expired!';
+                statusClass = 'text-danger fw-bold';
+              } else if (daysLeft === 0) {
+                statusText = 'Expires Today!';
+                statusClass = 'text-warning fw-bold';
+              } else {
+                statusText = `Expires in ${daysLeft} day${daysLeft > 1 ? 's' : ''}`;
+                statusClass = 'text-primary fw-bold';
+              }
+
+              list.push({
+                type,
+                expiry_date: formatDate(expiry),
+                days_left: daysLeft,
+                status_text: statusText,
+                status_class: statusClass,
+                ...client  // ✅ includes all formatted details
+              });
+            }
+          };
+
+          // Use DB values instead of hardcoded numbers
+          checkAndPush('FC', client.fc_expiry_date_input, limits.fc);
+          checkAndPush('NP', client.np_input, limits.np);
+          checkAndPush('Permit', client.permit_input, limits.permit);
+
+          return list;
+        });
+
+        // Sort soonest first (expired → near expiry)
+        notifications.sort((a, b) => a.days_left - b.days_left);
+
+        res.render('notification', { notifications });
+      }
+    );
+  });
 };
 
 
@@ -851,6 +882,59 @@ exports.backup = async (req, res) => {
 };
 
 
+
+exports.Changelimit = (req, res) => {
+  console.log("Updating Notification Limits...");
+
+  const { np_limit, fc_limit, permit_limit } = req.body;
+  const adminId = req.session.adminId;
+
+  // Check if logged in
+  if (!adminId) {
+    return res.redirect('/?alert=sessionexpired');
+  }
+
+  // Validate input
+  if (!np_limit || !fc_limit || !permit_limit) {
+    return res.redirect('/admin?alert=empty');
+  }
+
+  // Queries for updating each attribute
+  const queries = [
+    { attr: "np", value: np_limit },
+    { attr: "fc", value: fc_limit },
+    { attr: "permit", value: permit_limit }
+  ];
+
+  let completed = 0;
+  let hasError = false;
+
+  queries.forEach(q => {
+    const updateQuery = `UPDATE system_settings SET value = ?, updated_at = NOW() WHERE attribute = ?`;
+    db.query(updateQuery, [q.value, q.attr], (err, result) => {
+      if (err) {
+        console.error(`Error updating ${q.attr}:`, err);
+        hasError = true;
+      }
+
+      completed++;
+
+      // Once all 3 queries are done, redirect
+      if (completed === queries.length) {
+        if (hasError) {
+          return res.redirect('/admin?alert=updatefail');
+        }
+        console.log("Notification limits updated successfully!");
+        return res.redirect('/admin?alert=limitsupdated');
+      }
+    });
+  });
+};
+
+
+
+
+
 // Format date to dd/mm/yyyy
 function formatDate(date) {
   if(date==null)  
@@ -881,6 +965,7 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
 
