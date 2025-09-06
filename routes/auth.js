@@ -30,7 +30,11 @@ router.post("/change_password",backend.ChangePassword);
 
 router.post("/change_email",backend.ChangeEmail);
 
+
+router.post("/limit",backend.Changelimit);
+
 module.exports = router;
+
 
 
 
