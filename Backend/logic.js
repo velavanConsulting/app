@@ -630,6 +630,7 @@ exports.admin = (req, res) => {
   });
 };
 
+
 exports.NeditClient = (req, res) => {
   const {
     id,
@@ -642,15 +643,16 @@ exports.NeditClient = (req, res) => {
     np,
     permit,
     road_tax,
-	road_tax_amt,
+    road_tax_amt,
     notes
   } = req.body;
+  console.log("EDIT CLIENT HIT", req.body);
 
 
   const updateQuery = `
     UPDATE clients
     SET client_name = ?, phone = ?, company = ?, vehicle_type = ?,
-    fc_expiry_date = ?, np = ?, permit = ?, road_tax = ?, road_tax_amount= ?, notes = ?, modified_at = NOW()
+        fc_expiry_date = ?, np = ?, permit = ?, road_tax = ?, road_tax_amount = ?, notes = ?, modified_at = NOW()
     WHERE id = ?
   `;
 
@@ -663,7 +665,7 @@ exports.NeditClient = (req, res) => {
     np,
     permit,
     road_tax,
-	road_tax_amt,
+    road_tax_amt,
     notes,
     id
   ];
@@ -671,86 +673,14 @@ exports.NeditClient = (req, res) => {
   db.query(updateQuery, values, (err, result) => {
     if (err) {
       console.error("Error updating client:", err);
-      return res.redirect('/table?alert=error');
+      return res.redirect('/notification?alert=error');
     }
 
     console.log("Client updated successfully.");
 
-    res.redirect('/table?alert=updated');
+    res.redirect('/notification?alert=updated');
   });
 };
-
-exports.deleteClient = (req, res) => {
-  const vehicleNumbers = req.body.vehicle_ids;
-  if (!vehicleNumbers) {
-    return res.redirect('/table?alert=nodata');
-  }
-  const idsArray = Array.isArray(vehicleNumbers) ? vehicleNumbers : [vehicleNumbers];
-
-  const query = `DELETE FROM clients WHERE vehicle_number IN (?)`;
-
-  db.query(query, [idsArray], (err, result) => {
-    if (err) {
-      console.error("Error deleting clients:", err);
-      return res.redirect('/table?alert=error');
-    }
-
-    console.log("Deleted clients:", idsArray);
-    res.redirect('/table?alert=deleted');
-  });
-};
-
-exports.admin = (req, res) => {
-  const adminId = req.session.adminId;
-
-  if (!adminId) {
-    return res.redirect('/?alert=unauthorized');
-  }
-
-  const totalQuery = `SELECT COUNT(*) AS total FROM clients`;
-  const yesterdayQuery = `SELECT COUNT(*) AS yesterday FROM clients WHERE DATE(created_at) = CURDATE() - INTERVAL 1 DAY`;
-  const modifiedQuery = `SELECT COUNT(*) AS modified FROM clients WHERE DATE(modified_at) = CURDATE()`;
-  const allClientsQuery = `SELECT * FROM employee`;
-  const adminInfoQuery = `SELECT name, email FROM admin WHERE id = ?`;
-
-  db.query(totalQuery, (err, totalResult) => {
-    if (err) return res.status(500).send("Total query error");
-
-    db.query(yesterdayQuery, (err, yResult) => {
-      if (err) return res.status(500).send("Yesterday query error");
-
-      db.query(modifiedQuery, (err, mResult) => {
-        if (err) return res.status(500).send("Modified query error");
-
-        db.query(allClientsQuery, (err, employeeResult) => {
-          if (err) return res.status(500).send("All clients query error");
-
-          db.query(adminInfoQuery, [adminId], (err, adminInfoResult) => {
-            if (err || adminInfoResult.length === 0) {
-              return res.status(500).send("Admin info query error");
-            }
-
-            const stats = {
-              totalClients: totalResult[0].total,
-              newYesterday: yResult[0].yesterday,
-              modifiedToday: mResult[0].modified,
-            };
-
-            const admin = adminInfoResult[0];
-
-            res.render('admin', {
-              stats,
-              emp: employeeResult,
-              adminName: admin.name,
-              adminEmail: admin.email
-            });
-          });
-        });
-      });
-    });
-  });
-};
-
 
 
 
@@ -1089,6 +1019,7 @@ function formatDateTime(date) {
     hour12: true
   }); // dd/mm/yyyy, hh:mm AM/PM
 };
+
 
 
 
