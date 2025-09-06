@@ -12,6 +12,8 @@ router.post("/generate-report",backend.gr);
 
 router.post("/add",backend.addClient);
 
+router.post("/Nedit",backend.NeditClient);
+
 router.post("/edit",backend.editClient);
 
 router.post("/delete",backend.deleteClient);
@@ -29,5 +31,6 @@ router.post("/change_password",backend.ChangePassword);
 router.post("/change_email",backend.ChangeEmail);
 
 module.exports = router;
+
 
 
